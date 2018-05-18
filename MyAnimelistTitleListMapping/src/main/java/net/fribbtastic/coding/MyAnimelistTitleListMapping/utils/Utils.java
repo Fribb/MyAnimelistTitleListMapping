@@ -97,4 +97,19 @@ public class Utils {
 	    }
 	    return mostOccuringElement;
 	}
+	
+	/**
+	 * checks if a string can be parsed as integer
+	 * 
+	 * @param value - the string
+	 * @return true or false
+	 */
+	public static boolean tryParseInt(String value) {  
+	     try {  
+	         Integer.parseInt(value);  
+	         return true;  
+	      } catch (NumberFormatException e) {  
+	         return false;  
+	      }  
+	}
 }

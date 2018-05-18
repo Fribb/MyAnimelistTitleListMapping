@@ -73,7 +73,19 @@ public class JSONUtils {
 		JSONObject result = null;
 		
 		try {
-			result = new JSONObject(HTTPUtils.getResponse(urlString));
+			String response = HTTPUtils.getResponse(urlString, null, null);
+			
+			if (response != null) {
+				if (Utils.tryParseInt(response)) {
+					result = new JSONObject();
+					result.put("error", "Error " + Integer.parseInt(response));
+				} else {
+					result = new JSONObject(response);
+				}
+			} else {
+				result = new JSONObject();
+				result.put("error", "Error");
+			}
 			
 		} catch (JSONException e) {
 			logger.error("There was an Error while parsing the Response to a JSONObject", e);

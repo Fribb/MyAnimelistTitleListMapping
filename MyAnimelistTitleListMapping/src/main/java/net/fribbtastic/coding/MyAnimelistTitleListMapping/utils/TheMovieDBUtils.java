@@ -48,7 +48,7 @@ public class TheMovieDBUtils {
 			String query = StrSubstitutor.replace(API_QUERY, data);
 			URI uri = new URI(API_SCHEME, null, API_HOST, -1, API_PATH, query, null);
 			
-			String response = HTTPUtils.getResponse(uri.toASCIIString());
+			String response = HTTPUtils.getResponse(uri.toASCIIString(), null, null);
 			
 			JSONObject search = new JSONObject(response);
 			if (search.has("results")) {

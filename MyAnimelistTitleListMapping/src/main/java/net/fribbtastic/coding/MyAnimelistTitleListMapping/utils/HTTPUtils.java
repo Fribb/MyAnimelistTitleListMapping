@@ -20,56 +20,32 @@ import org.apache.log4j.Logger;
 public class HTTPUtils {
 	private static Logger logger = Logger.getLogger(HTTPUtils.class);
 
-	/**
-	 * Get the Response of an URL
-	 * 
-	 * @param url2 - the URL as String
-	 * @return the Response as String
-	 */
-	public static String getResponse(String urlString) {
-		
-		logger.debug("Sending request to " + urlString);
-
-		try {
-			URL url = new URL(urlString);
-			
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			
-			connection.setRequestMethod("GET");
-			
-			Integer responseCode = connection.getResponseCode();
-			
-			logger.debug("Response code was " + responseCode);
-			
-			BufferedReader reader = null;
-			
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			} else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-				return null;
-			} else {
-				reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-			}
-			
-			String line;
-			StringBuffer stringBuffer = new StringBuffer();
-			
-			while ((line = reader.readLine()) != null) {
-				stringBuffer.append(line);
-			}
-			
-			reader.close();
-			connection.disconnect();
-			
-			return stringBuffer.toString();
-			
-		} catch (MalformedURLException e) {
-			logger.error("The URL is malformed", e);
-		} catch (IOException e) {
-			logger.error("An error occured while requesting a response from the API", e);
-		}
-		return null;
-	}
+//	/**
+//	 * Get the Response of an URL
+//	 * 
+//	 * @param urlString - the URL as String
+//	 * @return the Response as String
+//	 */
+//	public static String getResponse(String urlString) {
+//		
+//		logger.debug("Sending request to " + urlString);
+//
+//		try {
+//			URL url = new URL(urlString);
+//			
+//			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//			
+//			connection.setRequestMethod("GET");
+//			
+//			return send(connection);
+//			
+//		} catch (MalformedURLException e) {
+//			logger.error("The URL is malformed", e);
+//		} catch (IOException e) {
+//			logger.error("An error occured while requesting a response from the API", e);
+//		}
+//		return null;
+//	}
 
 	/**
 	 * Get the Response of an URL
@@ -87,34 +63,15 @@ public class HTTPUtils {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			
 			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Authorization", "Bearer " + token);
-			connection.setRequestProperty("Accept-Language", language);
-			
-			Integer responseCode = connection.getResponseCode();
-			
-			logger.debug("Response code was " + responseCode);
-			
-			BufferedReader reader = null;
-			
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			} else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-				return null;
-			} else {
-				reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+			if (token != null) {
+				connection.setRequestProperty("Authorization", "Bearer " + token);
 			}
 			
-			String line;
-			StringBuffer stringBuffer = new StringBuffer();
-			
-			while ((line = reader.readLine()) != null) {
-				stringBuffer.append(line);
+			if (language != null) {
+				connection.setRequestProperty("Accept-Language", language);
 			}
 			
-			reader.close();
-			connection.disconnect();
-			
-			return stringBuffer.toString();
+			return send(connection);
 			
 		} catch (MalformedURLException e) {
 			logger.error("The URL is malformed", e);
@@ -122,6 +79,37 @@ public class HTTPUtils {
 			logger.error("An error occured while requesting a response from the API", e);
 		}
 		return null;
+	}
+	
+	private static String send(HttpURLConnection connection) throws IOException {
+		
+		Integer responseCode = connection.getResponseCode();
+		
+		logger.debug("Response code was " + responseCode);
+		
+		BufferedReader reader = null;
+		
+		if (responseCode == HttpURLConnection.HTTP_OK) {
+			reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		} else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+			return responseCode.toString();
+		} else if (responseCode == HttpURLConnection.HTTP_UNAVAILABLE) {
+			return responseCode.toString();
+		} else {
+			reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+		}
+		
+		String line;
+		StringBuffer stringBuffer = new StringBuffer();
+		
+		while ((line = reader.readLine()) != null) {
+			stringBuffer.append(line);
+		}
+		
+		reader.close();
+		connection.disconnect();
+		
+		return stringBuffer.toString();
 	}
 
 	/**
