@@ -49,7 +49,7 @@ public class Constants {
 	/**
 	 * the myanimelist API URL
 	 */
-	public static String malURL = "http://atarashii.fribbtastic.net/web/2.1/anime/${id}";
+	public static String malURL;
 	
 	/**
 	 * the token for TheTVDB

@@ -3,14 +3,15 @@
  */
 package net.fribbtastic.coding.MyAnimelistTitleListMapping.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -33,23 +34,27 @@ public class TheTVDBUtils {
 	/**
 	 * the API URL of TheTVDB.com
 	 */
-	private static String API_URL = "https://api.thetvdb.com/search/series?name=${title}";
+//	private static String API_URL = "https://api.thetvdb.com/search/series?name=${title}";
+	private static String API_SCHEME = "https";
+	private static String API_HOST = "api.thetvdb.com";
+	private static String API_PATH = "/search/series";
+	private static String API_QUERY = "name=${title}";
+	
 
 	/**
 	 * @param title - string that contains the title
 	 * @return the id found on TheTVDB or null
 	 */
-	public static Integer getID(String title) {
+	public static Integer getID(String title, String language) {
 		logger.debug("Searching on TheTVDB");
 		
 		try {
 			Map<String, String> data = new HashMap<String, String>();
-			data.put("title", URLEncoder.encode(title, PropertyUtils.getPropertyValue(PropertyUtils.ENCODING)));
-			String url = StrSubstitutor.replace(API_URL, data);
+			data.put("title", title);
+			String query = StrSubstitutor.replace(API_QUERY, data);
+			URI uri = new URI(API_SCHEME, null, API_HOST, -1, API_PATH, query, null);
 			
-			requestToken();
-			
-			String response = HTTPUtils.getResponse(url, Constants.TVDBToken);
+			String response = HTTPUtils.getResponse(uri.toASCIIString(), Constants.TVDBToken, language);
 			
 			if (response != null) {
 				JSONObject responseObj = new JSONObject(response);
@@ -64,18 +69,20 @@ public class TheTVDBUtils {
 					}
 				}
 			} 
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Encoding is not supported", e);
+		} catch (URISyntaxException e) {
+			logger.error("URI Syntax is wrong", e);
+		} catch (JSONException e) {
+			logger.error("Response could not be parsed to JSONObject", e);
 		}
 		
-		return -1;
+		return null;
 	}
 
 	/**
 	 * Request the Token from the login URL
 	 * 
 	 */
-	private static void requestToken() {
+	public static void requestToken() {
 		
 		Map<String, String> data = new HashMap<String, String>();
 		data.put("apy_key", PropertyUtils.getPropertyValue(PropertyUtils.THETVDBKEY));

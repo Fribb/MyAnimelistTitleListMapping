@@ -22,6 +22,7 @@
 		<project.path></project.path>
 		<project.apikey.thetvdb></project.apikey.thetvdb>
 		<project.apikey.themoviedb></project.apikey.themoviedb>
+		<project.apiurl.myanimelist></project.apiurl.myanimelist>
 	</properties>
 
 	<build>

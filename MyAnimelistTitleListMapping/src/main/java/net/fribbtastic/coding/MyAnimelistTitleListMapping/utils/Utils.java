@@ -4,6 +4,7 @@
 package net.fribbtastic.coding.MyAnimelistTitleListMapping.utils;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Fribb
@@ -59,5 +60,41 @@ public class Utils {
 		
 //		JSONUtils.writeFile(Constants.animeMapping_full, animeMapping_fullPath);
 //		JSONUtils.writeFile(Constants.animeTitles_full, animeTitles_fullPath);
+	}
+	
+	/**
+	 * Return the most occurring element from a list
+	 * 
+	 * @see Collections.sort()
+	 * 
+	 * @param list - a sorted list
+	 * @return the most occurring element of the list
+	 */
+	public static <T> T getMostOccurringElement(List<T> list) {
+	    int size = list.size();
+	    if(size == 0)
+	        return null;
+	     
+	    int count = 0;
+	    int maxCount = 0;
+	    T element = list.get(0);
+	    T mostOccuringElement = element;
+	     
+	    for(int index = 0; index < size; index++) {
+//	    	if (list.get(index).equals(-1)) {
+//				continue;
+//			}
+	        if(list.get(index).equals(element)) {
+	            count++;
+	            if(count > maxCount) {
+	                maxCount = count;
+	                mostOccuringElement = element;
+	            }
+	        } else {
+	            count = 1;
+	        }
+	        element = list.get(index);
+	    }
+	    return mostOccuringElement;
 	}
 }

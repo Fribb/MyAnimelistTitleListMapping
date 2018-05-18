@@ -23,7 +23,7 @@ public class HTTPUtils {
 	/**
 	 * Get the Response of an URL
 	 * 
-	 * @param urlString - the URL as String
+	 * @param url2 - the URL as String
 	 * @return the Response as String
 	 */
 	public static String getResponse(String urlString) {
@@ -45,6 +45,8 @@ public class HTTPUtils {
 			
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			} else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+				return null;
 			} else {
 				reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
 			}
@@ -75,9 +77,9 @@ public class HTTPUtils {
 	 * @param urlString - the URL as String
 	 * @return the Response as String
 	 */
-	public static String getResponse(String urlString, String token) {
+	public static String getResponse(String urlString, String token, String language) {
 		
-		logger.debug("Sending request to " + urlString);
+		logger.debug("Sending request to " + urlString.toString());
 
 		try {
 			URL url = new URL(urlString);
@@ -85,7 +87,8 @@ public class HTTPUtils {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			
 			connection.setRequestMethod("GET");
-			connection.setRequestProperty("authorization", "Bearer " + token);
+			connection.setRequestProperty("Authorization", "Bearer " + token);
+			connection.setRequestProperty("Accept-Language", language);
 			
 			Integer responseCode = connection.getResponseCode();
 			
@@ -95,6 +98,8 @@ public class HTTPUtils {
 			
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			} else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+				return null;
 			} else {
 				reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
 			}

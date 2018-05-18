@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import net.fribbtastic.coding.MyAnimelistTitleListMapping.utils.Constants;
 import net.fribbtastic.coding.MyAnimelistTitleListMapping.utils.PropertyUtils;
+import net.fribbtastic.coding.MyAnimelistTitleListMapping.utils.TheTVDBUtils;
 import net.fribbtastic.coding.MyAnimelistTitleListMapping.utils.Utils;
 
 /**
@@ -32,12 +33,14 @@ public class Main {
 		Integer end = Integer.valueOf(PropertyUtils.getPropertyValue(PropertyUtils.ITERATIONS)) + start;
 		
 		Constants.currentID = start;
-		
+		Constants.malURL = PropertyUtils.getPropertyValue(PropertyUtils.MALAPIURL);		
 		Utils.buildFileNames(start, end);
 		
 		Utils.loadFiles();
 		
 		logger.info("Starting Program: v" + PropertyUtils.getPropertyValue(PropertyUtils.VERSION));
+		
+		TheTVDBUtils.requestToken();
 		
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		executorService.scheduleAtFixedRate(Main::run, 0, 15, TimeUnit.SECONDS);

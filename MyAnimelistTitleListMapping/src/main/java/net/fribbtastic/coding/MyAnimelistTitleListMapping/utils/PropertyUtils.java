@@ -37,6 +37,7 @@ public class PropertyUtils {
 	public static String PATH = "project.path";
 	public static String THETVDBKEY = "project.apikey.thetvdb";
 	public static String THEMOVIEDBKEY = "project.apikey.themoviedb";
+	public static String MALAPIURL = "project.apiurl.myanimelist";
 
 	/**
 	 * Get the value of a given key

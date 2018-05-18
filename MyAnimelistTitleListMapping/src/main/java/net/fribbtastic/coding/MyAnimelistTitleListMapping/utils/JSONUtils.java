@@ -3,6 +3,7 @@
  */
 package net.fribbtastic.coding.MyAnimelistTitleListMapping.utils;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -55,6 +57,8 @@ public class JSONUtils {
 	 * 
 	 * @param id - the ID of the entry
 	 * @return the response as JSON Object
+	 * @throws MalformedURLException 
+	 * @throws JSONException 
 	 */
 	public static JSONObject getJSONResponse(Integer id) {
 		logger.debug("getting the JSON Response");
@@ -68,7 +72,12 @@ public class JSONUtils {
 		
 		JSONObject result = null;
 		
-		result = new JSONObject(HTTPUtils.getResponse(urlString));
+		try {
+			result = new JSONObject(HTTPUtils.getResponse(urlString));
+			
+		} catch (JSONException e) {
+			logger.error("There was an Error while parsing the Response to a JSONObject", e);
+		}
 		
 		return result;
 	}

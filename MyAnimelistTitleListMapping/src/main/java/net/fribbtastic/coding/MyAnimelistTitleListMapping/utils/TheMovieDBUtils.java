@@ -3,14 +3,15 @@
  */
 package net.fribbtastic.coding.MyAnimelistTitleListMapping.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -23,25 +24,31 @@ public class TheMovieDBUtils {
 	/**
 	 * the API URL for TheMovieDB.org
 	 */
-	private static String API_URL = "http://api.tmdb.org/3/search/movie?api_key=${api_key}&query=${title}&year=&language=en&include_adult=true";
+//	private static String API_URL = "http://api.tmdb.org/3/search/movie?api_key=${api_key}&query=${title}&year=&language=${language}&include_adult=true";
+	private static String API_SCHEME = "https";
+	private static String API_HOST = "api.tmdb.org";
+	private static String API_PATH = "/3/search/movie";
+	private static String API_QUERY = "api_key=${api_key}&query=${title}&year=&language=${language}&include_adult=true";
 
 	/**
 	 * @param actualTitles
 	 * @return
 	 */
-	public static Integer getID(String title) {
+	public static Integer getID(String title, String language) {
 		logger.debug("Searching on TheMovieDB");
 		
 		try {
-			String encoding = PropertyUtils.getPropertyValue(PropertyUtils.ENCODING);
 			String apiKey = PropertyUtils.getPropertyValue(PropertyUtils.THEMOVIEDBKEY);
 			
 			Map<String, String> data = new HashMap<String, String>();
-			data.put("title", URLEncoder.encode(title, encoding));
-			data.put("api_key", URLEncoder.encode(apiKey, encoding));
-			String url = StrSubstitutor.replace(API_URL, data);
+			data.put("title", title);
+			data.put("api_key",apiKey);
+			data.put("language", language);
 			
-			String response = HTTPUtils.getResponse(url);
+			String query = StrSubstitutor.replace(API_QUERY, data);
+			URI uri = new URI(API_SCHEME, null, API_HOST, -1, API_PATH, query, null);
+			
+			String response = HTTPUtils.getResponse(uri.toASCIIString());
 			
 			JSONObject search = new JSONObject(response);
 			if (search.has("results")) {
@@ -58,10 +65,12 @@ public class TheMovieDBUtils {
 				logger.debug("no results found");
 			}
 			
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Encoding is not supported", e);
+		} catch (URISyntaxException e) {
+			logger.error("URI Syntax is wrong", e);
+		} catch (JSONException e) {
+			logger.error("Response could not be parsed to JSONObject", e);
 		}
 		
-		return -1;
+		return null;
 	}
 }
