@@ -55,7 +55,10 @@ public class PropertyUtils {
 	 * available
 	 */
 	public static void loadProperties() {
-		File propertiesFile = new File(FILE);
+		String currentDir = ClassLoader.getSystemClassLoader().getResource(".").getPath();
+		String sep = currentDir.endsWith(File.separator) ? "" : File.separator;
+		
+		File propertiesFile = new File(currentDir + sep + FILE);
 
 		InputStream inputStream = null;
 
